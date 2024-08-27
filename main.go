@@ -1,16 +1,23 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func main() {
 	mux := http.NewServeMux()
-	http.StripPrefix("/app/", http.FileServer(http.Dir(".")))
-	mux.Handle("/app/", http.StripPrefix("/app/", http.FileServer(http.Dir("."))))
+	apiCfg := apiConfig{}
+	mux.Handle("/app/", apiCfg.middlewareMetricsInc(http.StripPrefix("/app/", http.FileServer(http.Dir(".")))))
+	
 	mux.HandleFunc("/healthz", func (w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(200)
 		w.Write([]byte("OK"))
 	})
+
+	mux.HandleFunc("/metrics", apiCfg.handlerMetrics)
+
+	mux.HandleFunc("/reset", apiCfg.handlerReset)
 
 
 	server := http.Server{
