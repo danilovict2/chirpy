@@ -10,42 +10,46 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 	body := struct {
 		Body string `json:"body"`
 	}{}
-	decoder.Decode(&body);
+	decoder.Decode(&body)
 
 	if len(body.Body) > 140 {
-		type returnError struct {
-			Error string `json:"error"`
-		}
-
-		ret := returnError{
-			"Chirp is too long",
-		}
-
-		dat, err := json.Marshal(ret)
-
-		w.WriteHeader(400)
-		if err != nil {
-			w.Write([]byte("Error - something went wrong"))
-			return
-		}
-
-		w.Write(dat)
+		respondWithError(w, "Chirp is too long", 400)
 		return
 	}
-	
-	type returnSucess struct {
-		Valid bool `json:"valid"`	
+
+	ret := struct {
+		CleanedBody string `json:"cleaned_body"`
+	}{cleanOfProfanity(body.Body)}
+
+	respondWithJSON(w, ret, 200)
+}
+
+func respondWithError(w http.ResponseWriter, msg string, code int) {
+	type returnError struct {
+		Error string `json:"error"`
 	}
-	ret := returnSucess{
-		true,
+
+	dat, err := json.Marshal(returnError{msg})
+
+	w.WriteHeader(code)
+
+	if err != nil {
+		w.Write([]byte("Error - something went wrong"))
+		return
 	}
-	dat, err := json.Marshal(ret)
+
+	w.Write(dat)
+}
+
+func respondWithJSON(w http.ResponseWriter, payload interface{}, code int) {
+	dat, err := json.Marshal(payload)
+
 	if err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte("Error - something went wrong"))
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(code)
 	w.Write(dat)
 }
