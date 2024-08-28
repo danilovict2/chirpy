@@ -19,6 +19,7 @@ func main() {
 
 	mux.HandleFunc("GET /api/reset", apiCfg.handlerReset)
 
+	mux.HandleFunc("POST /api/validate_chirp", validateChirp)
 
 	server := http.Server{
 		Handler: mux,
