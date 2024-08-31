@@ -1,5 +1,7 @@
 package database
 
+import "math"
+
 type User struct {
 	ID   int `json:"id"`
 	Email string `json:"email"`
@@ -14,7 +16,7 @@ func (db *DB) CreateUser(email string) (User, error) {
 
 	userID := 0
 	for id := range dbStruct.Users {
-		userID = id
+		userID = int(math.Max(float64(id), float64(userID)))
 	}
 
 	user := User{userID + 1, email}

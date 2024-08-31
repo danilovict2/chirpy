@@ -1,6 +1,9 @@
 package database
 
-import "slices"
+import (
+	"math"
+	"slices"
+)
 
 type Chirp struct {
 	ID   int `json:"id"`
@@ -40,7 +43,7 @@ func (db *DB) CreateChirp(body string) (Chirp, error) {
 
 	chirpID := 0
 	for id := range dbStruct.Chirps {
-		chirpID = id
+		chirpID = int(math.Max(float64(id), float64(chirpID)))
 	}
 
 	chirp := Chirp{chirpID + 1, body}
