@@ -7,7 +7,7 @@ type Chirp struct {
 	Body string `json:"body"`
 }
 
-var chirpID int = 0
+var chirpId int = 0
 
 func (db *DB) GetChirps() ([]Chirp, error) {
 	dbStruct, err := db.loadDB()
@@ -35,20 +35,19 @@ func (db *DB) GetChirps() ([]Chirp, error) {
 }
 
 func (db *DB) CreateChirp(body string) (Chirp, error) {
-	chirps, err := db.loadDB()
+	dbStruct, err := db.loadDB()
 	if err != nil {
 		return Chirp{}, err
 	}
 
-	chirpID++
-	chirp := Chirp{chirpID, body}
-	chirps.Chirps[chirp.ID] = chirp
+	chirpId++
+	chirp := Chirp{chirpId, body}
+	dbStruct.Chirps[chirp.ID] = chirp
 
-	err = db.writeDB(chirps)
+	err = db.writeDB(dbStruct)
 	if err != nil {
 		return Chirp{}, err
 	}
-
 
 	return chirp, nil
 }

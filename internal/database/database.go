@@ -15,6 +15,7 @@ type DB struct {
 
 type DBStructure struct {
 	Chirps map[int]Chirp `json:"chirps"`
+	Users map[int]User `json:"users"`
 }
 
 
@@ -55,6 +56,7 @@ func (db *DB) loadDB() (DBStructure, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	chirps := DBStructure{
 		map[int]Chirp{},
+		map[int]User{},
 	}
 	decoder.Decode(&chirps)
 
