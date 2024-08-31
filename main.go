@@ -24,6 +24,8 @@ func main() {
 	mux.HandleFunc("GET /api/chirps/{chirpID}", getChirp)
 
 	mux.HandleFunc("POST /api/users", createUser)
+	
+	mux.HandleFunc("POST /api/login", login)
 
 	server := http.Server{
 		Handler: mux,

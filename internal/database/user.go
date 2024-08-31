@@ -1,15 +1,21 @@
 package database
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type User struct {
-	ID   int `json:"id"`
-	Email string `json:"email"`
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-
 func (db *DB) CreateUser(email, password string) (User, error) {
+	if _, err := db.GetUserFromEmail(email); err == nil {
+		return User{}, fmt.Errorf("User with this email already exists")
+	}
+	
 	dbStruct, err := db.loadDB()
 	if err != nil {
 		return User{}, err
@@ -29,4 +35,19 @@ func (db *DB) CreateUser(email, password string) (User, error) {
 	}
 
 	return user, nil
+}
+
+func (db *DB) GetUserFromEmail(email string) (User, error) {
+	dbStruct, err := db.loadDB()
+	if err != nil {
+		return User{}, err
+	}
+
+	for _, user := range dbStruct.Users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+
+	return User{}, fmt.Errorf("User does not exist")
 }

@@ -9,12 +9,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type RequestUserBody struct{
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
 func createUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	body := struct {
-		Email string `json:"email"`
-		Password string `json:"password"`
-	}{}
+	body := RequestUserBody{}
 	decoder.Decode(&body)
 
 	db, err := database.NewDB("database.json")
@@ -29,7 +31,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	ret, err := db.CreateUser(body.Email, string(encryptedPassword))
 	if err != nil {
-		log.Fatal(err)
+		respondWithError(w, err.Error(), 400)
+		return
 	}
 
 	respondWithJSON(w, ret, 201)
