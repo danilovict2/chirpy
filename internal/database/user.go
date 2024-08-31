@@ -5,7 +5,6 @@ type User struct {
 	Email string `json:"email"`
 }
 
-var userID int = 0
 
 func (db *DB) CreateUser(email string) (User, error) {
 	dbStruct, err := db.loadDB()
@@ -13,8 +12,12 @@ func (db *DB) CreateUser(email string) (User, error) {
 		return User{}, err
 	}
 
-	userID++
-	user := User{userID, email}
+	userID := 0
+	for id := range dbStruct.Users {
+		userID = id
+	}
+
+	user := User{userID + 1, email}
 	dbStruct.Users[user.ID] = user
 
 	err = db.writeDB(dbStruct)
