@@ -5,10 +5,11 @@ import "math"
 type User struct {
 	ID   int `json:"id"`
 	Email string `json:"email"`
+	Password string `json:"password"`
 }
 
 
-func (db *DB) CreateUser(email string) (User, error) {
+func (db *DB) CreateUser(email, password string) (User, error) {
 	dbStruct, err := db.loadDB()
 	if err != nil {
 		return User{}, err
@@ -19,7 +20,7 @@ func (db *DB) CreateUser(email string) (User, error) {
 		userID = int(math.Max(float64(id), float64(userID)))
 	}
 
-	user := User{userID + 1, email}
+	user := User{userID + 1, email, password}
 	dbStruct.Users[user.ID] = user
 
 	err = db.writeDB(dbStruct)
