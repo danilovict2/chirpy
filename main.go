@@ -2,9 +2,13 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
+	
 	mux := http.NewServeMux()
 	apiCfg := apiConfig{}
 	mux.Handle("GET /app/", apiCfg.middlewareMetricsInc(http.StripPrefix("/app/", http.FileServer(http.Dir(".")))))
