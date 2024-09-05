@@ -8,7 +8,7 @@ import (
 
 func main() {
 	godotenv.Load()
-	
+
 	mux := http.NewServeMux()
 	apiCfg := apiConfig{}
 	mux.Handle("GET /app/", apiCfg.middlewareMetricsInc(http.StripPrefix("/app/", http.FileServer(http.Dir(".")))))
@@ -28,6 +28,7 @@ func main() {
 	mux.HandleFunc("GET /api/chirps/{chirpID}", getChirp)
 
 	mux.HandleFunc("POST /api/users", createUser)
+	mux.HandleFunc("PUT /api/users", updateUser)
 	
 	mux.HandleFunc("POST /api/login", login)
 
