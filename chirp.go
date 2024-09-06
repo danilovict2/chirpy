@@ -21,12 +21,18 @@ func createChirp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ID, err := getUserIDFromRequest(r)
+	if err != nil {
+		respondWithError(w, err.Error(), 401)
+		return
+	}
+
 	db, err := database.NewDB("database.json")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ret, err := db.CreateChirp(cleanOfProfanity(body.Body))
+	ret, err := db.CreateChirp(cleanOfProfanity(body.Body), ID)
 	if err != nil {
 		log.Fatal(err)
 	}

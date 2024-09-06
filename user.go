@@ -4,12 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/danilovict2/chirpy/internal/database"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,30 +40,9 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
-	tokenString, found := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
-	if !found {
-		respondWithError(w, "Please provide your token", 401)
-		return
-	}
-
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-
+	ID, err := getUserIDFromRequest(r)
 	if err != nil {
 		respondWithError(w, err.Error(), 401)
-		return
-	}
-
-	userID, err := token.Claims.GetSubject()
-	if err != nil {
-		respondWithError(w, err.Error(), 500)
-		return
-	}
-
-	ID, err := strconv.Atoi(userID)
-	if err != nil {
-		respondWithError(w, err.Error(), 500)
 		return
 	}
 

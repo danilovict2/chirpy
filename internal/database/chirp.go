@@ -8,6 +8,7 @@ import (
 type Chirp struct {
 	ID   int `json:"id"`
 	Body string `json:"body"`
+	AuthorID int `json:"author_id"`
 }
 
 func (db *DB) GetChirps() ([]Chirp, error) {
@@ -35,7 +36,7 @@ func (db *DB) GetChirps() ([]Chirp, error) {
 	return chirps, nil
 }
 
-func (db *DB) CreateChirp(body string) (Chirp, error) {
+func (db *DB) CreateChirp(body string, authorID int) (Chirp, error) {
 	dbStruct, err := db.loadDB()
 	if err != nil {
 		return Chirp{}, err
@@ -46,7 +47,7 @@ func (db *DB) CreateChirp(body string) (Chirp, error) {
 		chirpID = int(math.Max(float64(id), float64(chirpID)))
 	}
 
-	chirp := Chirp{chirpID + 1, body}
+	chirp := Chirp{chirpID + 1, body, authorID}
 	dbStruct.Chirps[chirp.ID] = chirp
 
 	err = db.writeDB(dbStruct)
