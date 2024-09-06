@@ -57,3 +57,28 @@ func (db *DB) CreateChirp(body string, authorID int) (Chirp, error) {
 
 	return chirp, nil
 }
+
+func (db *DB) GetChirp(chirpID int) (Chirp, error) {
+	dbStruct, err := db.loadDB()
+	if err != nil {
+		return Chirp{}, err
+	}
+
+	return dbStruct.Chirps[chirpID], nil
+}
+
+func (db *DB) DeleteChirp(chirpID int) error {
+	dbStruct, err := db.loadDB()
+	if err != nil {
+		return err
+	}
+
+	delete(dbStruct.Chirps, chirpID)
+
+	err = db.writeDB(dbStruct)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
